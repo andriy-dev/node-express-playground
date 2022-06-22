@@ -1,33 +1,20 @@
-const express = require('express')
-const app = express()
-const port = 3000
+var express = require('express');
+var path = require('path');
+var cookieParser = require('cookie-parser');
+var logger = require('morgan');
 
-app.get('/', (req, res) => {
-  res.send('Hello World!')
-})
+var indexRouter = require('./routes/index');
+var usersRouter = require('./routes/users');
 
-// ejemplo de otra posicion de ruta que devuelve "Fernando"
-app.get("/alumno", (req, res) => {
-  res.send("Fernando") // .send solo devuelve contenido estatico, por ej una cadena de texto
-})
+var app = express();
 
-// === ENVIAR INFO POR PARAMS ===
-// :alumno sera la clave, que va a almacenar el valor que pase el cliente 
-// ej: en el navegador "localhost:3000/alumno/Fernando/FullStack" 
-// req.params = {"alumno": "Fernando", "cursada": "FullStack"}
-app.get("/params/:alumno/:cursada", (req, res) => {
-  res.json(req.params) // .json se usa para mostrar objetos
-})
+app.use(logger('dev'));
+app.use(express.json());
+app.use(express.urlencoded({ extended: false }));
+app.use(cookieParser());
+app.use(express.static(path.join(__dirname, 'public')));
 
-//(rutas dinamicas siempre al final, para evitar pisar otras rutas)
+app.use('/', indexRouter);
+app.use('/users', usersRouter);
 
-// === ENVIAR INFO POR QUERY ===
-// http://localhost:3000/querys?alumno=Fernando&cursada=FullStack
-// req.query = {"alumno":"Fernando","cursada":"FullStack"}
-app.get("/querys", (req, res) => {
-  res.json(req.query);
-})
-
-app.listen(port, () => {
-  console.log(`Example app listening on port ${port}`)
-})
+module.exports = app;
